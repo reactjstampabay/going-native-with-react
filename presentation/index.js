@@ -35,14 +35,13 @@ import Interactive from "../assets/interactive";
 require("normalize.css");
 require("spectacle/lib/themes/default/index.css");
 
-
+// Preload the images
 const images = {
   city: require("../assets/city.jpg"),
   kat: require("../assets/kat.png"),
   logo: require("../assets/formidable-logo.svg"),
   markdown: require("../assets/markdown.png")
 };
-
 preloader(images);
 
 const theme = createTheme({
