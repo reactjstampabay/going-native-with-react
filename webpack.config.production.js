@@ -1,74 +1,48 @@
-/**
- * Webpack configuration
- */
-const webpack = require('webpack');
-const path = require('path');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const ENV_CONFIG = {
-  WEBPACK: {
-    preLoaders: [],
-    devtool: 'eval'
-  }
-};
+/* eslint-disable */
+
+var path = require("path");
+var webpack = require("webpack");
 
 module.exports = {
-  entry: {
-    javascript: './index.js',
-    html: './index.html'
+  entry: [
+    "babel-polyfill",
+    "./index"
+  ],
+  output: {
+    path: path.join(__dirname, "dist"),
+    filename: "bundle.js",
+    publicPath: "/dist/"
   },
-
-  module: {
-    preLoaders: ENV_CONFIG.WEBPACK.preLoaders,
-    loaders: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel',
-        query: {
-          presets: ['react', 'es2015']
-        }
-      },
-      {
-        test: /\.html$/,
-        loader: 'file?name=[name].[ext]'
-      },
-      {
-        test: /\.jpe?g$|\.gif$|\.ico$|\.png$|\.svg$|\.wav$|\.mp3$/,
-        loader: 'file?name=assets/images/[name].[ext]'
-      },
-      {
-        test: /\.woff$|\.ttf$|\.eot$/,
-        loader: 'file?name=assets/fonts/[name].[ext]'
-      },
-      {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
-      },
-      {
-        test: /\.scss$/,
-        loader: ExtractTextPlugin.extract('style', 'css!sass')
-      }
-    ]
-  },
-
   plugins: [
-    new ExtractTextPlugin('app.css'),
+    new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production')
+      "process.env": {
+        "NODE_ENV": JSON.stringify("production")
+      }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+      compressor: {
+        warnings: false
+      }
     })
   ],
-
-  // fix errors regarding missing modules
-  node: {
-    net: 'empty',
-    tls: 'empty',
-    fs: 'empty'
-  },
-
-  output: {
-    filename: 'app.js',
-    path: path.resolve(__dirname, 'build')
-  },
-
-  devtool: ENV_CONFIG.WEBPACK.devtool
+  module: {
+    loaders: [{
+      test: /\.md$/,
+      loader: "html-loader!markdown-loader?gfm=false"
+    }, {
+      test: /\.(js|jsx)$/,
+      exclude: /node_modules/,
+      loader: "babel-loader"
+    }, {
+      test: /\.css$/,
+      loader: "style-loader!css-loader"
+    }, {
+      test: /\.(png|jpg|gif)$/,
+      loader: "url-loader?limit=8192"
+    }, {
+      test: /\.svg$/,
+      loader: "url?limit=10000&mimetype=image/svg+xml"
+    }]
+  }
 };
